@@ -36,9 +36,15 @@ php artisan make:controller Api/ContactController
 ## laravel add route for api
 php artisan install:api
 
-# laravel prevent XSS
+##packages
+# laravel prevent XSS using ezyang/htmlpurifier
 composer require ezyang/htmlpurifier --ignore-platform-req=ext-curl
 composer require ezyang/htmlpurifier
 
+# laravel read excel using maatwebsite/excel
+composer require maatwebsite/excel
+
 
 root: $3cr3T@dmin123#@!
+
+

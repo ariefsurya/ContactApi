@@ -33,7 +33,12 @@ class ContactController extends Controller
             'iTake' => 'integer'
         ]);
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            // return response()->json(['error' => $validator->errors()], 400);
+            
+            $errors = $validator->errors();
+            $firstError = $errors->first();
+            
+            return response()->json(new ResponseResource(false, $firstError, null), 400);
         }
         
         $group_id = $request->query('group_id');
@@ -82,7 +87,6 @@ class ContactController extends Controller
 
         //check if validation fails
         if ($validator->fails()) {
-            
             $errors = $validator->errors();
             $firstError = $errors->first();
             
@@ -127,7 +131,11 @@ class ContactController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+            // return response()->json(['errors' => $validator->errors()], 400);
+            $errors = $validator->errors();
+            $firstError = $errors->first();
+            
+            return response()->json(new ResponseResource(false, $firstError, null), 400);
         }
 
         $contact = Contact::findOrFail($id);
@@ -151,5 +159,42 @@ class ContactController extends Controller
         } else {
             return response()->json(new ResponseResource(false, 'Contact not found', null), 404);
         }
+    }
+
+    public function postContactList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            '*.name' => 'required|string',
+            '*.address' => 'required|string',
+            '*.phone_number' => 'required|string',
+            '*.group_name' => 'string',
+        ]);
+
+        if ($validator->fails()) {
+            // return response()->json(['success' => false, 'message' => 'Validation errors', 'data' => $validator->errors()], 422);
+            $errors = $validator->errors();
+            $firstError = $errors->first();
+            
+            return response()->json(new ResponseResource(false, $firstError, null), 400);
+        }
+
+        $contactsData = $request->all();
+
+        $contacts = [];
+        foreach ($contactsData as $data) {
+            $group = Group::firstOrCreate(['name' => $data['group_name']]);
+
+            $contact = new Contact([
+                'name' => $data['name'],
+                'address' => $data['address'],
+                'phone_number' => $data['phone_number'],
+                'group_id' => $group->id,
+            ]);
+
+            $contact->save();
+            $contacts[] = $contact;
+        }
+
+        return new ResponseResource(true, 'List Contacts saved successfully', $contacts);
     }
 }
