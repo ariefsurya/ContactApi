@@ -11,5 +11,5 @@ Route::apiResource('/contacts', App\Http\Controllers\Api\ContactController::clas
 Route::post('/contactList', [App\Http\Controllers\Api\ContactController::class, 'postContactList']);
 Route::apiResource('/groups', App\Http\Controllers\Api\GroupController::class);
 
-// Route::post('/uploadJson', [App\Http\Controllers\Api\UploadController::class, 'uploadJson']);
+Route::post('/uploadJson', [App\Http\Controllers\Api\UploadController::class, 'uploadJson']);
 Route::post('/uploadExcel', [App\Http\Controllers\Api\UploadController::class, 'uploadExcel']);

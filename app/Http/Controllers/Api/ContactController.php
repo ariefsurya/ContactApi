@@ -142,11 +142,25 @@ class ContactController extends Controller
         if (!$contact) {
             return response()->json(new ResponseResource(false, 'Contact not found', null), 404);
         }
-        
-        $group = Group::firstOrCreate(['name' => $request->group_name]);
-        $contact->update($request->all());
 
-        return response()->json($contact);
+        // Sanitize input
+        if (!empty($request->group_name)) {
+            $group = Group::firstOrCreate(['name' => $this->sanitizer->sanitize($request->group_name)]);
+            $groupId = $group->id;
+        } else {
+            $groupId = 0;
+        }
+        
+        $sanitizedData = [
+            'name' => $this->sanitizer->sanitize($request->name),
+            'address' => $this->sanitizer->sanitize($request->address),
+            'phone_number' => $this->sanitizer->sanitize($request->phone_number),
+            'group_id' =>  $groupId,
+        ];
+
+        $contact->update($sanitizedData);
+
+        return new ResponseResource(true, 'List Contact saved successfully', $contact);
     }
 
     public function destroy($id)
@@ -182,12 +196,12 @@ class ContactController extends Controller
 
         $contacts = [];
         foreach ($contactsData as $data) {
-            $group = Group::firstOrCreate(['name' => $data['group_name']]);
+            $group = Group::firstOrCreate(['name' => $this->sanitizer->sanitize($data['group_name'])]);
 
             $contact = new Contact([
-                'name' => $data['name'],
-                'address' => $data['address'],
-                'phone_number' => $data['phone_number'],
+                'name' => $this->sanitizer->sanitize($data['name']),
+                'address' => $this->sanitizer->sanitize($data['address']),
+                'phone_number' => $this->sanitizer->sanitize($data['phone_number']),
                 'group_id' => $group->id,
             ]);
 
