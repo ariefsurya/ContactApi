@@ -11,12 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Schema::create('contacts', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string("name");
+        //     $table->string("address");
+        //     $table->string("phone_number");
+        //     $table->integer("group_id");
+        //     $table->timestamps();
+        // });
+
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->string("address");
+            $table->text("name");
+            $table->text("address");
             $table->string("phone_number");
-            $table->integer("group_id");
+            $table->unsignedBigInteger("group_id");
             $table->timestamps();
         });
     }
